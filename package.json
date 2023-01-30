@@ -1,0 +1,16 @@
+{
+  "name": "Minesweeper",
+  "uuid": "0c506c36-2e18-410b-925a-3760a4c74000",
+  "version": "3.6.2",
+  "creator": {
+    "version": "3.6.2"
+  },
+  "devDependencies": {
+    "@tonyptang/eslint-config": "^0.1.7",
+    "eslint": "^8.33.0",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "mitt": "^3.0.0"
+  }
+}
