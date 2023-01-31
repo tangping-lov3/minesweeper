@@ -1,5 +1,5 @@
-import { Button, Color, Component, Input, Label, Sprite, UITransform, _decorator } from 'cc'
-import { emitter, flat } from './Utils'
+import { Button, Color, Component, Label, Sprite, UITransform, Widget, _decorator } from 'cc'
+import { emitter, flat, longpress } from './Utils'
 import { Circle } from './CIrcle'
 import { useThunder } from './Stores'
 
@@ -15,7 +15,7 @@ export class Block extends Component {
   isThunder = false
   originBlocks: Block[][] = []
   position: [number, number] = [0, 0]
-  thunderColors = ['#FF0000AA', '#FF7F00AA', '#FFFF00AA', '#00FF00AA', '#0000FFAA', '#4B0082AA', '#8B00FFAA']
+  thunderColors = ['#DE4EEB', '#4EEBEB', '#4E67EB', '#EBDE4E', '#EB4E4E']
   aroundBlockPos: [number, number][] = []
   colorIndex = 0
 
@@ -43,7 +43,10 @@ export class Block extends Component {
   }
 
   start() {
-    this.node.on(Input.EventType.TOUCH_END, this.onClick, this)
+    this.node.on('click', this.onClick, this)
+    longpress(this.node, () => this.mark())
+    this.node.setSiblingIndex(1)
+    console.log(this.node)
   }
 
   init() {
@@ -53,26 +56,36 @@ export class Block extends Component {
 
   updateInfo([width, height]: [number, number], colorIndex: number) {
     this.UI.setContentSize(width, height)
+    this.updateCircleSize(width)
     this.colorIndex = colorIndex
     this.Sprite.color = new Color().fromHEX(this.colors[colorIndex])
   }
 
+  updateCircleSize(size: number) {
+    const ui = this.Circle.node.getComponent(Widget)
+    ui.left = size * 0.27
+    ui.right = size * 0.27
+    ui.top = size * 0.27
+    ui.bottom = size * 0.27
+  }
+
   onClick() {
-    const now = Date.now()
+    // const now = Date.now()
 
-    if (now - this.lastClickTime < 300) {
-      this.mark()
-      this.lastClickTime = 0
-      clearTimeout(this.timer)
-      return
-    }
+    // if (now - this.lastClickTime < 300) {
+    //   this.mark()
+    //   this.lastClickTime = 0
+    //   clearTimeout(this.timer)
+    //   return
+    // }
 
-    this.lastClickTime = now
-    clearTimeout(this.timer)
+    // this.lastClickTime = now
+    // clearTimeout(this.timer)
 
-    this.timer = setTimeout(() => {
-      this.dig()
-    }, 300)
+    // this.timer = setTimeout(() => {
+    //   this.dig()
+    // }, 500)
+    this.dig()
   }
 
   dig(force = true) {
@@ -93,9 +106,9 @@ export class Block extends Component {
      else
       this.Text.string = this.thunderCount.toString()
 
-    this.thunderStore.state.digedCount++
+    this.thunderStore.digedCount.value++
 
-    if (this.thunderStore.state.thunderCount === this.thunderStore.state.flagCount && this.thunderStore.state.digedCount + this.thunderStore.state.flagCount === this.thunderStore.state.totalCount)
+    if (this.thunderStore.thunderCount.value === this.thunderStore.flagCount.value && this.thunderStore.digedCount.value + this.thunderStore.flagCount.value === this.thunderStore.totalCount.value)
       emitter.emit('win')
   }
 
@@ -125,10 +138,10 @@ export class Block extends Component {
     this.status = this.status === 'flag' ? 'normal' : 'flag'
     if (this.status === 'flag') {
       this.Text.string = '🚩'
-      this.thunderStore.state.flagCount++
+      this.thunderStore.flagCount.value++
     } else {
       this.Text.string = ''
-      this.thunderStore.state.flagCount--
+      this.thunderStore.flagCount.value--
     }
   }
 

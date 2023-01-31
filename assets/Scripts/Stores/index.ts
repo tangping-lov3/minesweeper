@@ -1,24 +1,28 @@
+import { ref } from '../Utils'
+
 const thunder = () => {
-  const state = {
-    flagCount: 0,
-    totalCount: 0,
-    digedCount: 0,
-    thunderCount: 0
-  }
+  const flagCount = ref(0)
+  const totalCount = ref(0)
+  const digedCount = ref(0)
+  const thunderCount = ref(0)
 
   const reset = () => {
-    state.flagCount = 0
-    state.totalCount = 0
-    state.digedCount = 0
-    state.thunderCount = 0
+    flagCount.value = 0
+    totalCount.value = 0
+    digedCount.value = 0
+    thunderCount.value = 0
   }
 
   return () => {
     return {
-      state,
+      flagCount,
+      totalCount,
+      digedCount,
+      thunderCount,
       reset
     }
   }
 }
 
 export const useThunder = thunder()
+

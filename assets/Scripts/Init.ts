@@ -1,6 +1,6 @@
 import type { Node } from 'cc'
-import { Button, Component, Layout, UITransform, _decorator, instantiate, view } from 'cc'
-import { emitter, loadPrefab } from './Utils'
+import { Button, Component, Label, Layout, UITransform, _decorator, instantiate, view } from 'cc'
+import { emitter, loadPrefab, reactivity, ref } from './Utils'
 import { Block } from './Block'
 import type { Info } from './Result'
 import { Result } from './Result'
@@ -30,7 +30,7 @@ export class Init extends Component {
   thunders: boolean[] = []
   level = 2
   blocks: Node[][] = []
-  startTime = 0
+  startTime = ref(0)
   thunderStore = useThunder()
 
   @property({ type: Button })
@@ -39,12 +39,23 @@ export class Init extends Component {
   @property({ type: Layout })
   Result: Layout
 
+  @property({ type: Layout })
+  TopBarNode: Layout
+
   startGame() {
-    if (this.startTime) return
-    this.startTime = Date.now()
+    if (this.startTime.value) return
+    this.startTime.value = Date.now()
+  }
+
+  bindReactive() {
+    const flagLabel = this.TopBarNode.node.getChildByPath('Background/Flag').getChildByName('Label').getComponent(Label)
+    const timeLabel = this.TopBarNode.node.getChildByPath('Background/Time').getChildByName('Label').getComponent(Label)
+    reactivity(this.thunderStore.flagCount, { target: flagLabel, key: 'string' })
+    reactivity(this.startTime, { target: timeLabel, key: 'string' })
   }
 
   start() {
+    this.bindReactive()
     emitter.on('win', () => this.win())
     emitter.on('gameover', () => this.gameover())
     emitter.on('start', () => this.startGame())
@@ -64,7 +75,7 @@ export class Init extends Component {
   initThunders() {
     const totalBlock = Sizes[this.level] ** 2
     const totalThunder = Thunders[this.level]
-    this.thunderStore.state.thunderCount = totalThunder
+    this.thunderStore.thunderCount.value = totalThunder
     this.thunders = new Array(totalBlock - totalThunder).fill(false).concat(new Array(totalThunder).fill(true)).sort(() => Math.random() - 0.5)
   }
 
@@ -101,6 +112,7 @@ export class Init extends Component {
     this.removeBlockNode()
     this.initThunders()
     this.insertBlock()
+    this.thunderStore.reset()
   }
 
   removeBlockNode() {
@@ -119,12 +131,12 @@ export class Init extends Component {
     this.Result.node.active = true
     const result = this.Result.getComponent(Result)
     result.updateInfo(info)
-    this.startTime = 0
+    this.startTime.value = 0
   }
 
   win() {
     const now = Date.now()
-    const time = now - this.startTime
+    const time = now - this.startTime.value
     const info = {
       time: `${(time / 1000).toFixed(2)}S`,
       rank: 1
