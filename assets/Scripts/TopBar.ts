@@ -1,10 +1,9 @@
-import { Component, _decorator } from 'cc'
-const { ccclass } = _decorator
+import { Component, Layout, _decorator } from 'cc'
+const { ccclass, property } = _decorator
 
 @ccclass('TopBar')
 export class TopBar extends Component {
-  start() {
-    console.log(this)
-  }
+  @property({ type: Layout })
+  Select: Layout
 }
 

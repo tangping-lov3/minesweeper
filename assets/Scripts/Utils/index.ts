@@ -1,5 +1,5 @@
-import type { EventTouch, Node } from 'cc'
-import { Input, Prefab, resources } from 'cc'
+import type { EventHandler, EventTouch, Node } from 'cc'
+import { Component, Input, Prefab, resources } from 'cc'
 import mitt from 'mitt'
 
 export * from './vue'
@@ -43,4 +43,11 @@ export function longpress(target: Node, callback: (e: EventTouch) => void, time 
   target.on(Input.EventType.TOUCH_CANCEL, () => {
     clearTimeout(timer)
   })
+}
+
+export function createEventHandler(option: Partial<EventHandler>) {
+  const handler = new Component.EventHandler()
+  for (const key in option)
+    handler[key] = option[key]
+  return handler
 }

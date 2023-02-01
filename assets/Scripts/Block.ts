@@ -1,5 +1,6 @@
-import { Button, Color, Component, Label, Sprite, UITransform, Widget, _decorator } from 'cc'
-import { emitter, flat, longpress } from './Utils'
+import type { EventTouch } from 'cc'
+import { Button, Color, Component, Input, Label, Sprite, UITransform, Widget, _decorator } from 'cc'
+import { createEventHandler, emitter, flat, longpress } from './Utils'
 import { Circle } from './CIrcle'
 import { useThunder } from './Stores'
 
@@ -43,10 +44,13 @@ export class Block extends Component {
   }
 
   start() {
-    this.node.on('click', this.onClick, this)
+    this.node.on(Input.EventType.TOUCH_START, (e: EventTouch) => {
+      emitter.emit(Input.EventType.TOUCH_START, e)
+    })
+    const button = this.node.getComponent(Button)
+    button.clickEvents.push(createEventHandler({ target: this.node, component: 'Block', handler: 'onClick' }))
     longpress(this.node, () => this.mark())
     this.node.setSiblingIndex(1)
-    console.log(this.node)
   }
 
   init() {

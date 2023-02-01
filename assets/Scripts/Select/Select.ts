@@ -1,4 +1,4 @@
-import { Button, Component, Label, Layout, UITransform, Widget, _decorator } from 'cc'
+import { Button, Component, Input, Label, Layout, UITransform, Widget, _decorator, input } from 'cc'
 import { emitter, reactivity, ref } from '../Utils'
 import { Options } from './Option'
 
@@ -40,17 +40,18 @@ export class Select extends Component {
     emitter.on('select', (value: string) => this.onSelect(value))
     this.Current.node.getChildByPath('Label').getComponent(Label).string = this.currentOption.value
     this.bindReactivity()
-    // input.on(Input.EventType.TOUCH_MOVE, e => {
-    //   debugger
-    // })
+    input.on(Input.EventType.TOUCH_START, () => {
+      this.active.value = false
+    })
 
-    // systemEvent.on(SystemEvent.EventType.TOUCH_START, e => {
-    //   debugger
-    // })
+    emitter.on(Input.EventType.TOUCH_START, () => {
+      this.active.value = false
+    })
   }
 
   onSelect(value: string) {
     this.currentOption.value = value
+    this.active.value = false
   }
 }
 

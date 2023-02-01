@@ -5,17 +5,19 @@ import { Block } from './Block'
 import type { Info } from './Result'
 import { Result } from './Result'
 import { useThunder } from './Stores'
+import { Select } from './Select/Select'
+import { TopBar } from './TopBar'
 
 const Sizes = {
-  1: 12,
-  2: 18,
-  3: 24
+  低难度: 12,
+  中难度: 18,
+  高难度: 24
 }
 
 const Thunders = {
-  1: 20,
-  2: 40,
-  3: 99
+  低难度: 20,
+  中难度: 40,
+  高难度: 99
 }
 
 const { ccclass, property } = _decorator
@@ -28,7 +30,7 @@ export class Init extends Component {
   startY = 0
   TopBar: UITransform = null
   thunders: boolean[] = []
-  level = 2
+  level = '低难度'
   blocks: Node[][] = []
   startTime = ref(0)
   thunderStore = useThunder()
@@ -52,6 +54,10 @@ export class Init extends Component {
     const timeLabel = this.TopBarNode.node.getChildByPath('Background/Time').getChildByName('Label').getComponent(Label)
     reactivity(this.thunderStore.flagCount, { target: flagLabel, key: 'string' })
     reactivity(this.startTime, { target: timeLabel, key: 'string' })
+    reactivity(this.TopBarNode.getComponent(TopBar).Select.getComponent(Select).currentOption, (val: keyof typeof Sizes) => {
+      this.level = val
+      this._update()
+    })
   }
 
   start() {
@@ -65,7 +71,6 @@ export class Init extends Component {
     }, this)
 
     this.windowSize = view.getVisibleSize()
-    this.blockSize = this.windowSize.width / Sizes[this.level]
     this.startX = -(this.windowSize.width / 2)
     this.TopBar = this.node.getChildByName('TopBar').getComponent(UITransform)
     this.startY = -this.TopBar.height
@@ -85,7 +90,8 @@ export class Init extends Component {
     let colorIndex = 0
 
     const blocks: Block[][] = []
-
+    console.log(this)
+    this.blocks = []
     for (let i = 0; i < Sizes[this.level]; i++) {
       startColorIndex = (startColorIndex + 1) % 2
       colorIndex = (startColorIndex + 1) % 2
@@ -109,6 +115,7 @@ export class Init extends Component {
   }
 
   _update() {
+    this.blockSize = this.windowSize.width / Sizes[this.level]
     this.removeBlockNode()
     this.initThunders()
     this.insertBlock()
@@ -116,15 +123,15 @@ export class Init extends Component {
   }
 
   removeBlockNode() {
-    for (let i = 0; i < this.blocks.length; i++) {
-      for (let j = 0; j < this.blocks[i].length; j++)
-        this.blocks[i][j].removeFromParent()
+    for (let i = 0; i < this.node.children.length; i++) {
+      const child = this.node.children[i]
+      if (child.name === 'Block')
+        child.destroy()
     }
   }
 
   restart() {
     this._update()
-    console.log('restart')
   }
 
   showResult(info: Info) {
@@ -142,7 +149,6 @@ export class Init extends Component {
       rank: 1
     }
     this.showResult(info)
-    console.log('win')
   }
 
   gameover() {
@@ -151,7 +157,6 @@ export class Init extends Component {
       rank: '___'
     } as Info
     this.showResult(info)
-    console.log('gameover')
   }
 }
 
