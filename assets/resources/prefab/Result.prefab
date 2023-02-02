@@ -167,7 +167,7 @@
     },
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 77,
+      "x": 82,
       "y": 62,
       "z": 0
     },
@@ -444,7 +444,7 @@
     "_alignFlags": 33,
     "_target": null,
     "_left": 100,
-    "_right": 100,
+    "_right": 70,
     "_top": 80,
     "_bottom": 0,
     "_horizontalCenter": 0,
@@ -507,7 +507,7 @@
     },
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": -77,
+      "x": -82,
       "y": 62,
       "z": 0
     },
@@ -783,7 +783,7 @@
     },
     "_alignFlags": 9,
     "_target": null,
-    "_left": 100,
+    "_left": 70,
     "_right": 100,
     "_top": 85,
     "_bottom": 0,
@@ -828,7 +828,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 440,
+      "width": 390,
       "height": 390
     },
     "_anchorPoint": {
@@ -1168,7 +1168,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 440,
+      "width": 390,
       "height": 60
     },
     "_anchorPoint": {
@@ -1369,7 +1369,7 @@
     },
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 180,
+      "x": 155,
       "y": 205,
       "z": 0
     },
@@ -1512,14 +1512,8 @@
       "__uuid__": "1925a955-143a-4053-9cd3-373b545eb4b8@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
-    "_hoverSprite": {
-      "__uuid__": "20835ba4-6145-4fbc-a58a-051ce700aa3e@f9941",
-      "__expectedType__": "cc.SpriteFrame"
-    },
-    "_pressedSprite": {
-      "__uuid__": "544e49d6-3f05-4fa8-9a9e-091f98fc2ce8@f9941",
-      "__expectedType__": "cc.SpriteFrame"
-    },
+    "_hoverSprite": null,
+    "_pressedSprite": null,
     "_disabledSprite": {
       "__uuid__": "951249e0-9f16-456d-8b85-a6ca954da16b@f9941",
       "__expectedType__": "cc.SpriteFrame"
@@ -1593,7 +1587,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 440,
+      "width": 390,
       "height": 490
     },
     "_anchorPoint": {
@@ -1657,8 +1651,8 @@
     },
     "_alignFlags": 45,
     "_target": null,
-    "_left": 100,
-    "_right": 100,
+    "_left": 125,
+    "_right": 125,
     "_top": 100,
     "_bottom": 50,
     "_horizontalCenter": 0,
@@ -1698,6 +1692,9 @@
     },
     "Restart": {
       "__id__": 55
+    },
+    "Close": {
+      "__id__": 65
     },
     "_id": ""
   },

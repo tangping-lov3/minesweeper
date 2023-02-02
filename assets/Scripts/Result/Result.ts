@@ -1,5 +1,5 @@
 import { Button, Component, Label, Layout, _decorator } from 'cc'
-import { Init } from './Init'
+import { Init } from '../Init'
 
 const { ccclass, property } = _decorator
 
@@ -19,8 +19,8 @@ export class Result extends Component {
 
   start() {
     this.Restart.node.on('click', () => {
-      this.node.active = false
       this.node.parent.getComponent(Init).restart()
+      this.node.active = false
     }, this)
 
     this.Close.node.on('click', () => {

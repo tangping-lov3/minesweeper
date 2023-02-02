@@ -60,7 +60,7 @@ export class Block extends Component {
 
   updateInfo([width, height]: [number, number], colorIndex: number) {
     this.UI.setContentSize(width, height)
-    this.updateCircleSize(width)
+    // this.updateCircleSize(width)
     this.colorIndex = colorIndex
     this.Sprite.color = new Color().fromHEX(this.colors[colorIndex])
   }
@@ -74,21 +74,7 @@ export class Block extends Component {
   }
 
   onClick() {
-    // const now = Date.now()
-
-    // if (now - this.lastClickTime < 300) {
-    //   this.mark()
-    //   this.lastClickTime = 0
-    //   clearTimeout(this.timer)
-    //   return
-    // }
-
-    // this.lastClickTime = now
-    // clearTimeout(this.timer)
-
-    // this.timer = setTimeout(() => {
-    //   this.dig()
-    // }, 500)
+    if (this.thunderStore.end.value) return
     this.dig()
   }
 
@@ -99,6 +85,7 @@ export class Block extends Component {
       this.digThunder()
       flat(this.originBlocks).forEach(block => block.digThunder())
       emitter.emit('gameover')
+      this.thunderStore.end.value = true
       return
     }
     this.computeAroundThunderCount()
@@ -138,6 +125,8 @@ export class Block extends Component {
   }
 
   mark() {
+    debugger
+    if (this.thunderStore.end.value) return
     if (this.status !== 'flag' && this.status !== 'normal') return
     this.status = this.status === 'flag' ? 'normal' : 'flag'
     if (this.status === 'flag') {

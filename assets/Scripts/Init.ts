@@ -2,8 +2,8 @@ import type { Node } from 'cc'
 import { Button, Component, Label, Layout, UITransform, _decorator, instantiate, view } from 'cc'
 import { emitter, loadPrefab, reactivity, ref } from './Utils'
 import { Block } from './Block'
-import type { Info } from './Result'
-import { Result } from './Result'
+import type { Info } from './Result/Result'
+import { Result } from './Result/Result'
 import { useThunder } from './Stores'
 import { Select } from './Select/Select'
 import { TopBar } from './TopBar'
@@ -44,9 +44,16 @@ export class Init extends Component {
   @property({ type: Layout })
   TopBarNode: Layout
 
+  startTimer = 0
+
   startGame() {
-    if (this.startTime.value) return
-    this.startTime.value = Date.now()
+    if (this.startTimer) return
+    this.startTimer = setInterval(() => {
+      // debugger
+      console.log(this.startTime.value)
+
+      this.startTime.value++
+    }, 1000)
   }
 
   bindReactive() {
@@ -90,7 +97,6 @@ export class Init extends Component {
     let colorIndex = 0
 
     const blocks: Block[][] = []
-    console.log(this)
     this.blocks = []
     for (let i = 0; i < Sizes[this.level]; i++) {
       startColorIndex = (startColorIndex + 1) % 2
@@ -142,6 +148,8 @@ export class Init extends Component {
   }
 
   win() {
+    clearInterval(this.startTimer)
+    this.startTimer = 0
     const now = Date.now()
     const time = now - this.startTime.value
     const info = {
@@ -152,6 +160,8 @@ export class Init extends Component {
   }
 
   gameover() {
+    clearInterval(this.startTimer)
+    this.startTimer = 0
     const info = {
       time: '___',
       rank: '___'

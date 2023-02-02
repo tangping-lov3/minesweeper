@@ -29,10 +29,10 @@ export function flat<T>(arr: T[][]): T[] {
 
 export const emitter = mitt()
 
-export function longpress(target: Node, callback: (e: EventTouch) => void, time = 500) {
+export function longpress(target: Node, callback: (e: EventTouch) => void, time = 1000) {
   let timer: number
   target.on(Input.EventType.TOUCH_START, (event: EventTouch) => {
-    event.preventSwallow = true
+    clearTimeout(timer)
     timer = setTimeout(() => {
       callback(event)
     }, time)

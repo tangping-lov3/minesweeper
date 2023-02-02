@@ -5,12 +5,14 @@ const thunder = () => {
   const totalCount = ref(0)
   const digedCount = ref(0)
   const thunderCount = ref(0)
+  const end = ref(false)
 
   const reset = () => {
     flagCount.value = 0
     totalCount.value = 0
     digedCount.value = 0
     thunderCount.value = 0
+    end.value = false
   }
 
   return () => {
@@ -19,6 +21,7 @@ const thunder = () => {
       totalCount,
       digedCount,
       thunderCount,
+      end,
       reset
     }
   }
