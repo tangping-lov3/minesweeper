@@ -49,7 +49,7 @@ export class Block extends Component {
     })
     const button = this.node.getComponent(Button)
     button.clickEvents.push(createEventHandler({ target: this.node, component: 'Block', handler: 'onClick' }))
-    longpress(this.node, () => this.mark())
+    longpress(this.node, () => this.mark(), 500)
     this.node.setSiblingIndex(1)
   }
 
@@ -99,8 +99,12 @@ export class Block extends Component {
 
     this.thunderStore.digedCount.value++
 
-    if (this.thunderStore.thunderCount.value === this.thunderStore.flagCount.value && this.thunderStore.digedCount.value + this.thunderStore.flagCount.value === this.thunderStore.totalCount.value)
+    if (this.isWin())
       emitter.emit('win')
+  }
+
+  isWin() {
+    return (this.thunderStore.digedCount.value === this.thunderStore.totalCount.value - this.thunderStore.thunderCount.value)
   }
 
   digThunder() {
@@ -125,7 +129,6 @@ export class Block extends Component {
   }
 
   mark() {
-    debugger
     if (this.thunderStore.end.value) return
     if (this.status !== 'flag' && this.status !== 'normal') return
     this.status = this.status === 'flag' ? 'normal' : 'flag'

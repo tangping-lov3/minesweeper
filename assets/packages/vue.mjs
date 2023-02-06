@@ -791,9 +791,29 @@ function trigger(target, type, key, newValue, oldValue, oldTarget) {
         }
     }
 }
+
+function toRest(target) {
+    if (isArray(target)) {
+        const result = [];
+        for (const key in target) {
+            result.push(target[key]);
+        }
+        return result;
+    } else if(isSet(target)) {
+        const result = [];
+        target.forEach((value) => result.push(value));
+        return result;
+    } 
+    const res = {};
+    for (const key in target) {
+        res[key] = target[key];
+    }
+    return res;
+}
+
 function triggerEffects(dep, debuggerEventExtraInfo) {
     // spread into array for stabilization
-    const effects = isArray(dep) ? dep : [...dep];
+    const effects = isArray(dep) ? dep : toRest(dep);
     for (const effect of effects) {
         if (effect.computed) {
             triggerEffect(effect, debuggerEventExtraInfo);
@@ -12323,8 +12343,8 @@ function isComponent(tag, props, context) {
                 return true;
             }
             else if (
-            // :is on plain element - only treat as component in compat mode
-            p.name === 'bind' &&
+                // :is on plain element - only treat as component in compat mode
+                p.name === 'bind' &&
                 isStaticArgOf(p.arg, 'is') &&
                 false &&
                 checkCompatEnabled("COMPILER_IS_ON_ELEMENT" /* CompilerDeprecationTypes.COMPILER_IS_ON_ELEMENT */, context, p.loc)) {

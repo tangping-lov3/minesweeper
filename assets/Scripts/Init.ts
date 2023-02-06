@@ -15,7 +15,7 @@ const Sizes = {
 }
 
 const Thunders = {
-  低难度: 20,
+  低难度: 2,
   中难度: 40,
   高难度: 99
 }
@@ -49,9 +49,6 @@ export class Init extends Component {
   startGame() {
     if (this.startTimer) return
     this.startTimer = setInterval(() => {
-      // debugger
-      console.log(this.startTime.value)
-
       this.startTime.value++
     }, 1000)
   }
@@ -70,6 +67,8 @@ export class Init extends Component {
   start() {
     this.bindReactive()
     emitter.on('win', () => this.win())
+    console.log(this.thunderStore)
+
     emitter.on('gameover', () => this.gameover())
     emitter.on('start', () => this.startGame())
     this.Result.node.active = false
@@ -89,6 +88,8 @@ export class Init extends Component {
     const totalThunder = Thunders[this.level]
     this.thunderStore.thunderCount.value = totalThunder
     this.thunders = new Array(totalBlock - totalThunder).fill(false).concat(new Array(totalThunder).fill(true)).sort(() => Math.random() - 0.5)
+    this.thunderStore.thunderCount.value = totalThunder
+    this.thunderStore.totalCount.value = totalBlock
   }
 
   async insertBlock() {
@@ -123,9 +124,9 @@ export class Init extends Component {
   _update() {
     this.blockSize = this.windowSize.width / Sizes[this.level]
     this.removeBlockNode()
+    this.thunderStore.reset()
     this.initThunders()
     this.insertBlock()
-    this.thunderStore.reset()
   }
 
   removeBlockNode() {

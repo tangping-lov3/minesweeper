@@ -15,8 +15,5 @@
   "dependencies": {
     "mitt": "^3.0.0",
     "vue": "^3.2.45"
-  },
-  "scripts": {
-    "postinstall": "node ./scripts/postinstall.js"
   }
 }
