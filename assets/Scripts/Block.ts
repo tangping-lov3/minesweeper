@@ -8,7 +8,6 @@ const { ccclass, property } = _decorator
 
 @ccclass('Block')
 export class Block extends Component {
-  lastClickTime = 0
   timer = 0
   thunderCount = 0
   colors = ['#b3d665', '#77A21A']
@@ -47,7 +46,6 @@ export class Block extends Component {
     this.Sprite.color = new Color().fromHEX(this.colors[this.colorIndex])
     this.Text.string = ''
     this.Circle.node.active = false
-    this.lastClickTime = 0
     clearTimeout(this.timer)
   }
 
@@ -58,13 +56,14 @@ export class Block extends Component {
     const button = this.node.getComponent(Button)
     button.clickEvents.push(createEventHandler({ target: this.node, component: 'Block', handler: 'onClick' }))
     longpress(this.node, () => this.mark(), 500)
-    this.node.setSiblingIndex(0)
     this.bindReactive()
   }
 
   init() {
+    // this.node.setSiblingIndex(0)
     this.UI = this.getComponent(UITransform)
     this.Sprite = this.getComponent(Sprite)
+    this.reset()
   }
 
   updateInfo([width, height]: [number, number], colorIndex: number) {

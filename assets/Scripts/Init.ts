@@ -33,6 +33,7 @@ export class Init extends Component {
   level = '低难度'
   blocks: Node[][] = []
   startTime = ref(0)
+  initialBlocks: Node[] = []
   thunderStore = useThunder()
 
   @property({ type: Button })
@@ -45,6 +46,15 @@ export class Init extends Component {
   TopBarNode: Layout
 
   startTimer = 0
+
+  async initBlocks() {
+    const prefab = await loadPrefab('prefab/Block')
+    const totalBlock = Sizes['高难度'] ** 2
+    for (let i = 0; i < totalBlock; i++) {
+      const node = instantiate(prefab)
+      this.initialBlocks.push(node)
+    }
+  }
 
   startGame() {
     if (this.startTimer) return
@@ -61,11 +71,16 @@ export class Init extends Component {
     reactivity(this.TopBarNode.getComponent(TopBar).Select.getComponent(Select).currentOption, (val: keyof typeof Sizes) => {
       this.level = val
       this._update()
+    }, {
+      immediate: false
     })
   }
 
-  start() {
+  async start() {
+    await this.initBlocks()
     this.bindReactive()
+    console.log(this)
+
     emitter.on('win', () => this.win())
 
     emitter.on('gameover', () => this.gameover())
@@ -92,12 +107,16 @@ export class Init extends Component {
   }
 
   async insertBlock() {
-    const prefab = await loadPrefab('prefab/Block')
+    // const prefab = await loadPrefab('prefab/Block')
     let startColorIndex = 1
     let colorIndex = 0
-
+    let index = 0
     const blocks: Block[][] = []
     this.blocks = []
+    console.log(this.node.children)
+
+    // const totalBlock = Sizes[this.level] ** 2
+    const childrenBlockLen = this.node.children.length - 2
     for (let i = 0; i < Sizes[this.level]; i++) {
       startColorIndex = (startColorIndex + 1) % 2
       colorIndex = (startColorIndex + 1) % 2
@@ -105,7 +124,7 @@ export class Init extends Component {
       this.blocks[i] = []
       for (let j = 0; j < Sizes[this.level]; j++) {
         colorIndex = (colorIndex + 1) % 2
-        const block = instantiate(prefab)
+        const block = this.initialBlocks[index]
         const blockScript = block.getComponent(Block)
         blocks[i][j] = blockScript
         this.blocks[i][j] = block
@@ -115,8 +134,20 @@ export class Init extends Component {
         blockScript.originBlocks = blocks
         blockScript.isThunder = this.thunders.pop()
         block.setPosition(i * this.blockSize + this.startX, -((j + 1) * this.blockSize) + this.startY)
-        this.node.addChild(block)
+        // debugger
+        if (index >= childrenBlockLen)
+          this.node.addChild(block)
+
+        block.setSiblingIndex(0)
+        index++
       }
+    }
+    let next = this.initialBlocks[index]
+    while (next) {
+      if (next.name === 'Block')
+        next.removeFromParent()
+      index++
+      next = this.initialBlocks[index]
     }
   }
 
@@ -131,11 +162,12 @@ export class Init extends Component {
   }
 
   removeBlockNode() {
-    for (let i = 0; i < this.node.children.length; i++) {
-      const child = this.node.children[i]
-      if (child.name === 'Block')
-        child.destroy()
-    }
+    // for (let i = 0; i < this.node.children.length; i++) {
+    //   const child = this.node.children[i]
+    //   if (child.name === 'Block')
+    //     // child.destroy()
+    //     child.removeFromParent()
+    // }
   }
 
   restart() {
