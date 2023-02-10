@@ -79,7 +79,6 @@ export class Init extends Component {
   async start() {
     await this.initBlocks()
     this.bindReactive()
-    console.log(this)
 
     emitter.on('win', () => this.win())
 
@@ -113,7 +112,6 @@ export class Init extends Component {
     let index = 0
     const blocks: Block[][] = []
     this.blocks = []
-    console.log(this.node.children)
 
     // const totalBlock = Sizes[this.level] ** 2
     const childrenBlockLen = this.node.children.length - 2
