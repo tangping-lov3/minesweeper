@@ -9,13 +9,13 @@ import { Select } from './Select/Select'
 import { TopBar } from './TopBar'
 
 const Sizes = {
-  低难度: 12,
-  中难度: 18,
-  高难度: 24
+  低难度: 10,
+  中难度: 14,
+  高难度: 18
 }
 
 const Thunders = {
-  低难度: 2,
+  低难度: 20,
   中难度: 40,
   高难度: 99
 }
@@ -54,9 +54,9 @@ export class Init extends Component {
   }
 
   bindReactive() {
-    const flagLabel = this.TopBarNode.node.getChildByPath('Background/Flag').getChildByName('Label').getComponent(Label)
+    const flagLabel = this.TopBarNode.node.getChildByPath('Background/Flag').getChildByName('Label')
     const timeLabel = this.TopBarNode.node.getChildByPath('Background/Time').getChildByName('Label').getComponent(Label)
-    reactivity(this.thunderStore.flagCount, { target: flagLabel, key: 'string' })
+    reactivity(this.thunderStore.flagCount, { key: 'string', node: flagLabel, component: Label })
     reactivity(this.startTime, { target: timeLabel, key: 'string' })
     reactivity(this.TopBarNode.getComponent(TopBar).Select.getComponent(Select).currentOption, (val: keyof typeof Sizes) => {
       this.level = val
@@ -67,7 +67,6 @@ export class Init extends Component {
   start() {
     this.bindReactive()
     emitter.on('win', () => this.win())
-    console.log(this.thunderStore)
 
     emitter.on('gameover', () => this.gameover())
     emitter.on('start', () => this.startGame())
@@ -87,7 +86,7 @@ export class Init extends Component {
     const totalBlock = Sizes[this.level] ** 2
     const totalThunder = Thunders[this.level]
     this.thunderStore.thunderCount.value = totalThunder
-    this.thunders = new Array(totalBlock - totalThunder).fill(false).concat(new Array(totalThunder).fill(true)).sort(() => Math.random() - 0.5)
+    this.thunders = new Array(totalBlock - totalThunder).fill(false).concat(new Array(totalThunder).fill(true)).sort(() => Math.random() - 0.5).sort(() => Math.random() - 0.5).sort(() => Math.random() - 0.5)
     this.thunderStore.thunderCount.value = totalThunder
     this.thunderStore.totalCount.value = totalBlock
   }
@@ -122,6 +121,8 @@ export class Init extends Component {
   }
 
   _update() {
+    this.startTime.value = 0
+    this.thunderStore.end.value = false
     this.blockSize = this.windowSize.width / Sizes[this.level]
     this.removeBlockNode()
     this.thunderStore.reset()
@@ -145,16 +146,15 @@ export class Init extends Component {
     this.Result.node.active = true
     const result = this.Result.getComponent(Result)
     result.updateInfo(info)
-    this.startTime.value = 0
+    // this.startTime.value = 0
   }
 
   win() {
     clearInterval(this.startTimer)
+    this.thunderStore.end.value = true
     this.startTimer = 0
-    const now = Date.now()
-    const time = now - this.startTime.value
     const info = {
-      time: `${(time / 1000).toFixed(2)}S`,
+      time: `${this.startTime.value}S`,
       rank: 1
     }
     this.showResult(info)
@@ -162,6 +162,7 @@ export class Init extends Component {
 
   gameover() {
     clearInterval(this.startTimer)
+    this.thunderStore.end.value = true
     this.startTimer = 0
     const info = {
       time: '___',

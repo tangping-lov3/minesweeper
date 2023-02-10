@@ -1,6 +1,6 @@
 import type { EventTouch } from 'cc'
 import { Button, Color, Component, Input, Label, Sprite, UITransform, Widget, _decorator } from 'cc'
-import { createEventHandler, emitter, flat, longpress } from './Utils'
+import { createEventHandler, emitter, flat, longpress, reactivity, ref } from './Utils'
 import { Circle } from './CIrcle'
 import { useThunder } from './Stores'
 
@@ -12,13 +12,14 @@ export class Block extends Component {
   timer = 0
   thunderCount = 0
   colors = ['#b3d665', '#77A21A']
-  status: 'normal' | 'thunder' | 'flag' | 'diged' = 'normal'
+  status = ref<'normal' | 'thunder' | 'flag' | 'diged' >('normal')
   isThunder = false
   originBlocks: Block[][] = []
   position: [number, number] = [0, 0]
   thunderColors = ['#DE4EEB', '#4EEBEB', '#4E67EB', '#EBDE4E', '#EB4E4E']
   aroundBlockPos: [number, number][] = []
   colorIndex = 0
+  thunderTextColors = ['#085A0E', '#2860F1', '#E5F341', '#F3D741', '#F16928', '#E90B0B', '#C50BE9', '#FF034A']
 
   thunderStore = useThunder()
 
@@ -34,8 +35,15 @@ export class Block extends Component {
   @property({ type: Label })
   Text: Label
 
+  bindReactive() {
+    reactivity(this.status, nv => {
+      if (nv === 'diged')
+        this.Sprite.color = new Color().fromHEX(this.colorIndex === 0 ? '#d1b89e' : '#dfc3a3')
+    })
+  }
+
   reset() {
-    this.status = 'normal'
+    this.status.value = 'normal'
     this.Sprite.color = new Color().fromHEX(this.colors[this.colorIndex])
     this.Text.string = ''
     this.Circle.node.active = false
@@ -50,7 +58,8 @@ export class Block extends Component {
     const button = this.node.getComponent(Button)
     button.clickEvents.push(createEventHandler({ target: this.node, component: 'Block', handler: 'onClick' }))
     longpress(this.node, () => this.mark(), 500)
-    this.node.setSiblingIndex(1)
+    this.node.setSiblingIndex(0)
+    this.bindReactive()
   }
 
   init() {
@@ -80,7 +89,7 @@ export class Block extends Component {
 
   dig(force = true) {
     emitter.emit('start')
-    if (this.status !== 'normal') return
+    if (this.status.value !== 'normal') return
     if (this.isThunder && force) {
       this.digThunder()
       flat(this.originBlocks).forEach(block => block.digThunder())
@@ -89,13 +98,17 @@ export class Block extends Component {
       return
     }
     this.computeAroundThunderCount()
-    this.status = 'diged'
-    this.Sprite.color = new Color().fromHEX('#FFFFFF')
+    this.status.value = 'diged'
+
+    // this.Sprite.color = new Color().fromHEX('#FFFFFF')
 
     if (this.thunderCount === 0)
-      this.digAround()
+      { this.digAround() }
      else
-      this.Text.string = this.thunderCount.toString()
+      {
+        this.Text.string = this.thunderCount.toString()
+        this.Text.color = new Color().fromHEX(this.thunderTextColors[this.thunderCount - 1])
+      }
 
     this.thunderStore.digedCount.value++
 
@@ -108,8 +121,8 @@ export class Block extends Component {
   }
 
   digThunder() {
-    if (this.isThunder && this.status === 'normal') {
-      this.status = 'thunder'
+    if (this.isThunder && this.status.value === 'normal') {
+      this.status.value = 'thunder'
       this.showCircle()
       this.Sprite.color = new Color().fromHEX(this.thunderColors[Math.floor(Math.random() * this.thunderColors.length)])
     }
@@ -123,16 +136,16 @@ export class Block extends Component {
   digAround() {
     for (const [x, y] of this.aroundBlockPos) {
       const block = this.originBlocks[x]?.[y]
-      if (block && block.status === 'normal')
+      if (block && block.status.value === 'normal')
         block.dig(false)
     }
   }
 
   mark() {
     if (this.thunderStore.end.value) return
-    if (this.status !== 'flag' && this.status !== 'normal') return
-    this.status = this.status === 'flag' ? 'normal' : 'flag'
-    if (this.status === 'flag') {
+    if (this.status.value !== 'flag' && this.status.value !== 'normal') return
+    this.status.value = this.status.value === 'flag' ? 'normal' : 'flag'
+    if (this.status.value === 'flag') {
       this.Text.string = '🚩'
       this.thunderStore.flagCount.value++
     } else {
