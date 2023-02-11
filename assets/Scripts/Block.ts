@@ -120,9 +120,10 @@ export class Block extends Component {
   }
 
   digThunder() {
-    if (this.isThunder && this.status.value === 'normal') {
+    if (this.isThunder && (this.status.value === 'normal' || this.status.value === 'flag')) {
       this.status.value = 'thunder'
       this.showCircle()
+      this.Text.string = ''
       this.Sprite.color = new Color().fromHEX(this.thunderColors[Math.floor(Math.random() * this.thunderColors.length)])
     }
   }

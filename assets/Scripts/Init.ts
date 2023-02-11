@@ -7,6 +7,7 @@ import { Result } from './Result/Result'
 import { useThunder } from './Stores'
 import { Select } from './Select/Select'
 import { TopBar } from './TopBar'
+import { _wx } from './Wx'
 
 const Sizes = {
   低难度: 10,
@@ -77,6 +78,9 @@ export class Init extends Component {
   }
 
   async start() {
+    _wx.showLoading({
+      title: '正在初始化数据'
+    })
     await this.initBlocks()
     this.bindReactive()
 
@@ -94,6 +98,7 @@ export class Init extends Component {
     this.TopBar = this.node.getChildByName('TopBar').getComponent(UITransform)
     this.startY = -this.TopBar.height
     this._update()
+    _wx.hideLoading()
   }
 
   initThunders() {
@@ -201,4 +206,3 @@ export class Init extends Component {
     this.showResult(info)
   }
 }
-
