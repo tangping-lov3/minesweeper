@@ -34,6 +34,9 @@ export class Block extends Component {
   @property({ type: Label })
   Text: Label
 
+  clickLock = ref(false)
+  debug = false
+
   bindReactive() {
     reactivity(this.status, nv => {
       if (nv === 'diged')
@@ -55,8 +58,15 @@ export class Block extends Component {
     })
     const button = this.node.getComponent(Button)
     button.clickEvents.push(createEventHandler({ target: this.node, component: 'Block', handler: 'onClick' }))
-    longpress(this.node, () => this.mark(), 500)
+    this.clickLock = longpress(this.node, () => this.mark(), 500)
     this.bindReactive()
+
+    if (this.debug) {
+      this.computeAroundThunderCount()
+      this.Text.string = this.thunderCount.toString()
+      if (this.isThunder)
+        this.digThunder()
+    }
   }
 
   init() {
@@ -82,7 +92,7 @@ export class Block extends Component {
   }
 
   onClick() {
-    if (this.thunderStore.end.value) return
+    if (this.thunderStore.end.value || this.clickLock.value) return
     this.dig()
   }
 

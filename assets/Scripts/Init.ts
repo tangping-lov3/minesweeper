@@ -190,7 +190,7 @@ export class Init extends Component {
     this.startTimer = 0
     const info = {
       time: `${this.startTime.value}S`,
-      rank: 1
+      rank: '暂无'
     }
     this.showResult(info)
   }
@@ -200,8 +200,8 @@ export class Init extends Component {
     this.thunderStore.end.value = true
     this.startTimer = 0
     const info = {
-      time: '___',
-      rank: '___'
+      time: '--',
+      rank: '--'
     } as Info
     this.showResult(info)
   }
