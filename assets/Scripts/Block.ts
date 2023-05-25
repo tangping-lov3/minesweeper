@@ -71,6 +71,7 @@ export class Block extends Component {
 
   __updateInfo([width, height]: [number, number], colorIndex: number) {
     this.UI.setContentSize(width, height)
+    this.Text.getComponent(UITransform).setContentSize(width, height)
     // this.updateCircleSize(width)
     this.__colorIndex = colorIndex
     this.Sprite.color = new Color().fromHEX(this.__colors[colorIndex])

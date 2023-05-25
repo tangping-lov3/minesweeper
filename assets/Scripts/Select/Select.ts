@@ -56,6 +56,7 @@ export class Select extends Component {
     emitter.emit('difficulty', value)
     this._currentOptionTarget.string = value
     this.__active = false
+    this.__updateActive()
   }
 }
 
