@@ -1,6 +1,6 @@
 import type { EventTouch } from 'cc'
 import { Button, Color, Component, Input, Label, Sprite, UITransform, Widget, _decorator } from 'cc'
-import { createEventHandler, emitter, flat, longpress, reactivity, ref } from './Utils'
+import { createEventHandler, emitter, flat, longpress } from './Utils'
 import { Circle } from './CIrcle'
 import { useThunder } from './Stores'
 
@@ -11,7 +11,7 @@ export class Block extends Component {
   __timer = 0
   __thunderCount = 0
   __colors = ['#b3d665', '#77A21A']
-  __status = ref<'normal' | 'thunder' | 'flag' | 'diged' >('normal')
+  __status: 'normal' | 'thunder' | 'flag' | 'diged' = 'normal'
   __isThunder = false
   __originBlocks: Block[][] = []
   __position: [number, number] = [0, 0]
@@ -34,22 +34,16 @@ export class Block extends Component {
   @property({ type: Label })
   Text: Label
 
-  __clickLock = ref(false)
+  __clickLock = { value: false }
   __debug = false
 
-  __bindReactive() {
-    reactivity(this.__status, nv => {
-      if (nv === 'diged')
-        this.Sprite.color = new Color().fromHEX(this.__colorIndex === 0 ? '#d1b89e' : '#dfc3a3')
-    })
-  }
-
   __reset() {
-    this.__status.value = 'normal'
+    this.__status = 'normal'
     this.Sprite.color = new Color().fromHEX(this.__colors[this.__colorIndex])
     this.Text.string = ''
     this.Circle.node.active = false
     clearTimeout(this.__timer)
+    this.__thunderCount = 0
   }
 
   start() {
@@ -59,7 +53,6 @@ export class Block extends Component {
     const button = this.node.getComponent(Button)
     button.clickEvents.push(createEventHandler({ target: this.node, component: 'Block', handler: 'onClick' }))
     this.__clickLock = longpress(this.node, () => this.__mark(), 500)
-    this.__bindReactive()
 
     if (this.__debug) {
       this.__computeAroundThunderCount()
@@ -98,7 +91,7 @@ export class Block extends Component {
 
   __dig(force = true) {
     emitter.emit('start')
-    if (this.__status.value !== 'normal') return
+    if (this.__status !== 'normal') return
     if (this.__isThunder && force) {
       this.__digThunder()
       flat(this.__originBlocks).forEach(block => block.__digThunder())
@@ -107,8 +100,8 @@ export class Block extends Component {
       return
     }
     this.__computeAroundThunderCount()
-    this.__status.value = 'diged'
-
+    this.__status = 'diged'
+    this.Sprite.color = new Color().fromHEX(this.__colorIndex === 0 ? '#d1b89e' : '#dfc3a3')
     this.Sprite.color = new Color().fromHEX('#FFFFFF')
 
     if (this.__thunderCount === 0)
@@ -130,8 +123,8 @@ export class Block extends Component {
   }
 
   __digThunder() {
-    if (this.__isThunder && (this.__status.value === 'normal' || this.__status.value === 'flag')) {
-      this.__status.value = 'thunder'
+    if (this.__isThunder && (this.__status === 'normal' || this.__status === 'flag')) {
+      this.__status = 'thunder'
       this.__showCircle()
       this.Text.string = ''
       this.Sprite.color = new Color().fromHEX(this.__thunderColors[Math.floor(Math.random() * this.__thunderColors.length)])
@@ -146,16 +139,16 @@ export class Block extends Component {
   __digAround() {
     for (const [x, y] of this.__aroundBlockPos) {
       const block = this.__originBlocks[x]?.[y]
-      if (block && block.__status.value === 'normal')
+      if (block && block.__status === 'normal')
         block.__dig(false)
     }
   }
 
   __mark() {
     if (this.__thunderStore.end.value) return
-    if (this.__status.value !== 'flag' && this.__status.value !== 'normal') return
-    this.__status.value = this.__status.value === 'flag' ? 'normal' : 'flag'
-    if (this.__status.value === 'flag') {
+    if (this.__status !== 'flag' && this.__status !== 'normal') return
+    this.__status = this.__status === 'flag' ? 'normal' : 'flag'
+    if (this.__status === 'flag') {
       this.Text.string = '🚩'
       this.__thunderStore.flagCount.value++
     } else {

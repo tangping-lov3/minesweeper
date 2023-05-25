@@ -1,5 +1,5 @@
 import { Button, Component, Input, Label, Layout, UITransform, Widget, _decorator, input } from 'cc'
-import { emitter, reactivity, ref } from '../Utils'
+import { emitter } from '../Utils'
 import { Options } from './Option'
 
 const { ccclass, property } = _decorator
@@ -14,19 +14,20 @@ export class Select extends Component {
 
   __Widget: Widget
   __initSize = { top: 0, bottom: 0 }
-  __active = ref(false)
-  __currentOption = ref('低难度')
+  __active = false
+  __currentOption = '低难度'
   __optionComp: Options
-  __options = ref(['低难度', '中难度', '高难度'])
+  __options = ['低难度', '中难度', '高难度']
 
-  __bindReactivity() {
-    reactivity(this.__currentOption, { target: this.Current.node.getChildByPath('Label').getComponent(Label), key: 'string' })
-    reactivity(this.__active, val => {
-      if (val) this.__Widget.bottom = -this.__optionComp.__buttonHeight.value + this.__initSize.bottom
+  get _currentOptionTarget() {
+    return this.Current.node.getChildByPath('Label').getComponent(Label)
+  }
+
+  __updateActive() {
+    if (this.__active) this.__Widget.bottom = -this.__optionComp.__buttonHeight + this.__initSize.bottom
       else this.__Widget.bottom = this.__initSize.bottom
       this.Options.getComponent(Widget).top = this.Current.getComponent(UITransform).height
       this.Current.getComponent(Widget).top = 0
-    })
   }
 
   start() {
@@ -35,23 +36,26 @@ export class Select extends Component {
     this.__optionComp = this.Options.node.getComponent(Options)
     this.__optionComp.__options = this.__options
     this.Current.node.on('click', () => {
-      this.__active.value = !this.__active.value
+      this.__active = !this.__active
+      this.__updateActive()
     })
     emitter.on('select', (value: string) => this.__onSelect(value))
-    this.Current.node.getChildByPath('Label').getComponent(Label).string = this.__currentOption.value
-    this.__bindReactivity()
+    this._currentOptionTarget.string = this.__currentOption
     input.on(Input.EventType.TOUCH_START, () => {
-      this.__active.value = false
+      this.__active = false
     })
 
     emitter.on(Input.EventType.TOUCH_START, () => {
-      this.__active.value = false
+      this.__active = false
     })
+    emitter.emit('difficulty', this.__currentOption)
   }
 
   __onSelect(value: string) {
-    this.__currentOption.value = value
-    this.__active.value = false
+    this.__currentOption = value
+    emitter.emit('difficulty', value)
+    this._currentOptionTarget.string = value
+    this.__active = false
   }
 }
 

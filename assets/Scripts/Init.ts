@@ -1,6 +1,6 @@
 import type { Node } from 'cc'
 import { Button, Component, Label, Layout, UITransform, _decorator, instantiate, view } from 'cc'
-import { emitter, loadPrefab, reactivity, ref } from './Utils'
+import { emitter, loadPrefab } from './Utils'
 import { Block } from './Block'
 import type { Info } from './Result/Result'
 import { Result } from './Result/Result'
@@ -33,7 +33,7 @@ export class Init extends Component {
   __thunders: boolean[] = []
   __level = '低难度'
   __blocks: Node[][] = []
-  __startTime = ref(0)
+  __startTime = 0
   __initialBlocks: Node[] = []
   __thunderStore = useThunder()
 
@@ -60,21 +60,28 @@ export class Init extends Component {
   __startGame() {
     if (this.__startTimer) return
     this.__startTimer = setInterval(() => {
-      this.__startTime.value++
+      this.__startTime++
+      this._timeLabel.string = this.__startTime.toString()
     }, 1000)
   }
 
   __bindReactive() {
-    const flagLabel = this.TopBarNode.node.getChildByPath('Background/Flag').getChildByName('Label')
-    const timeLabel = this.TopBarNode.node.getChildByPath('Background/Time').getChildByName('Label').getComponent(Label)
-    reactivity(this.__thunderStore.flagCount, { key: 'string', node: flagLabel, component: Label })
-    reactivity(this.__startTime, { target: timeLabel, key: 'string' })
-    reactivity(this.TopBarNode.getComponent(TopBar).Select.getComponent(Select).__currentOption, (val: keyof typeof Sizes) => {
-      this.__level = val
-      this._update()
-    }, {
-      immediate: false
+    const flagLabel = this.TopBarNode.node.getChildByPath('Background/Flag').getChildByName('Label').getComponent(Label)
+    emitter.on(this.__thunderStore.flagCount.emitKey, () => {
+      flagLabel.string = this.__thunderStore.flagCount.value.toString()
     })
+  }
+
+  get _timeLabel() {
+    return this.TopBarNode.node.getChildByPath('Background/Time').getChildByName('Label').getComponent(Label)
+  }
+
+  get _flagLabel() {
+    return this.TopBarNode.node.getChildByPath('Background/Flag').getChildByName('Label').getComponent(Label)
+  }
+
+  get __selectOption() {
+    return this.TopBarNode.getComponent(TopBar).Select.getComponent(Select).__currentOption
   }
 
   async start() {
@@ -83,7 +90,10 @@ export class Init extends Component {
     })
     await this.__initBlocks()
     this.__bindReactive()
-
+    emitter.on('difficulty', (val: string) => {
+      this.__level = val
+      this._update()
+    })
     emitter.on('win', () => this.__win())
 
     emitter.on('gameover', () => this.__gameover())
@@ -155,7 +165,8 @@ export class Init extends Component {
   }
 
   _update() {
-    this.__startTime.value = 0
+    this.__startTime = 0
+    this._timeLabel.string = this.__startTime.toString()
     this.__thunderStore.end.value = false
     this.__blockSize = this.__windowSize.width / Sizes[this.__level]
     this.__removeBlockNode()
@@ -189,7 +200,7 @@ export class Init extends Component {
     this.__thunderStore.end.value = true
     this.__startTimer = 0
     const info = {
-      time: `${this.__startTime.value}S`,
+      time: `${this.__startTime}S`,
       rank: '暂无'
     }
     this.__showResult(info)
@@ -200,7 +211,7 @@ export class Init extends Component {
     this.__thunderStore.end.value = true
     this.__startTimer = 0
     const info = {
-      time: '--',
+      time: `${this.__startTime.toString()}S`,
       rank: '--'
     } as Info
     this.__showResult(info)

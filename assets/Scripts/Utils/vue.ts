@@ -1,7 +1,7 @@
 /* eslint-disable-next-line @typescript-eslint/consistent-type-imports */
 import { Button, Canvas, EditBox, Label, Layout, Node, PageView, ProgressBar, RichText, ScrollView, Slider, Sprite, Toggle, UITransform, VideoPlayer, WebView, Widget } from 'cc'
-import type { Ref, WatchOptions } from '../../packages/vue.mjs.js' // /dist/vue.esm-browser
-import { watch } from '../../packages/vue.min.mjs'
+import type { Ref, WatchOptions } from './packages/vue.mjs.js' // /dist/vue.esm-browser
+import { watch } from './packages/vue.min.mjs'
 
 export function reactivity<T>(ref: Ref<T>, callback: Fn<T>, options?: WatchOptions): void
 export function reactivity<T, C extends Component>(ref: Ref<T>, target: ReactiveTarget<C>, options?: WatchOptions): void
@@ -32,4 +32,4 @@ type Fn<T> = (val: T) => void
 
 type Component = Label | UITransform | Layout | Sprite | Button | Canvas | EditBox | PageView | ProgressBar | RichText | ScrollView | Slider | Toggle | VideoPlayer | WebView | Widget
 
-export * from '../../packages/vue.mjs'
+export * from './packages/vue.min.mjs'
