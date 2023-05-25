@@ -1,0 +1,11 @@
+{
+  "mini_is_json_obfus": false,
+  "mini_deadCodeInjection": true,
+  "mini_renameGlobals": true,
+  "mini_splitStrings": true,
+  "mini_transformObjectKeys": true,
+  "mini_deadCodeInjectionThreshold": 0.69,
+  "mini_controlFlowFlattening": true,
+  "mini_controlFlowFlatteningThreshold": 0.44,
+  "mini_seed": 19.23
+}

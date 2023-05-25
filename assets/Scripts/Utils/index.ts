@@ -31,7 +31,7 @@ export function flat<T>(arr: T[][]): T[] {
 export const emitter = mitt()
 
 export function longpress(target: Node, callback: (e: EventTouch) => void, time = 1000) {
-  let timer: number
+  let timer: any
   const clickLock = ref(false)
   target.on(Input.EventType.TOUCH_START, (event: EventTouch) => {
     clearTimeout(timer)

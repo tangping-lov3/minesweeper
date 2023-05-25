@@ -19,7 +19,7 @@ export class Result extends Component {
 
   start() {
     this.Restart.node.on('click', () => {
-      this.node.parent.getComponent(Init).restart()
+      this.node.parent.getComponent(Init).__restart()
       this.node.active = false
     }, this)
 
@@ -28,7 +28,7 @@ export class Result extends Component {
     })
   }
 
-  updateInfo(info: Info) {
+  __updateInfo(info: Info) {
     const len = this.node.parent.children.length
     this.node.setSiblingIndex(len - 1)
     this.Time.node.getChildByName('Label').getComponent(Label).string = `${info.time}`
