@@ -7,5 +7,7 @@
   "mini_deadCodeInjectionThreshold": 0.69,
   "mini_controlFlowFlattening": true,
   "mini_controlFlowFlatteningThreshold": 0.44,
-  "mini_seed": 19.23
+  "mini_seed": 466.33,
+  "mini_identifierNamesGenerator": "1",
+  "mini_identifiersPrefix": "tt"
 }

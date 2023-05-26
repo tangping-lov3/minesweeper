@@ -22,4 +22,4 @@ node_modules/
 # WebStorm
 #//////////////////////////
 .idea/
-build/wechatgame
+# build/wechatgame
