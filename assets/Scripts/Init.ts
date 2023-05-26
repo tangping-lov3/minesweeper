@@ -143,12 +143,10 @@ export class Init extends Component {
         this.__blocks[i][j] = block
         __blockScript.__init()
         __blockScript.__updateInfo([this.__blockSize, this.__blockSize], colorIndex)
-        debugger
         __blockScript.__position = [i, j]
         __blockScript.__originBlocks = blocks
         __blockScript.__isThunder = this.__thunders.pop()
         block.setPosition(i * this.__blockSize + this.__startX, -((j + 1) * this.__blockSize) + this.__startY)
-        // debugger
         if (index >= childrenBlockLen)
           this.node.addChild(block)
 

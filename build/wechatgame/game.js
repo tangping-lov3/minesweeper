@@ -32,10 +32,10 @@ if (canvas){
 // Adjust initial canvas size
 if (canvas && window.devicePixelRatio >= 2) {canvas.width *= 2; canvas.height *= 2;}
 
-const importMap = require("src/import-map.e6dc9.js").default;
+const importMap = require("src/import-map.8d466.js").default;
 System.warmup({
     importMap,
-    importMapUrl: 'src/import-map.e6dc9.js',
+    importMapUrl: 'src/import-map.8d466.js',
     defaultHandler: (urlNoSchema) => {
         require('.' + urlNoSchema);
     },
@@ -50,7 +50,7 @@ System.warmup({
 });
 
 firstScreen.start('default', 'default', 'true').then(() => {
-    return System.import('./application.70159.js');
+    return System.import('./application.f1a63.js');
 }).then((module) => {
     return firstScreen.setProgress(0.2).then(() => Promise.resolve(module));
 }).then(({ Application }) => {
