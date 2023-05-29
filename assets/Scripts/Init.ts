@@ -1,12 +1,12 @@
 import type { Node } from 'cc'
 import { Button, Component, Label, Layout, UITransform, _decorator, instantiate, view } from 'cc'
 import { emitter, loadPrefab } from './Utils'
-import { Block } from './Block'
+import { Block } from './Block/Block'
 import type { Info } from './Result/Result'
 import { Result } from './Result/Result'
 import { useThunder } from './Stores'
 import { Select } from './Select/Select'
-import { TopBar } from './TopBar'
+import { TopBar } from './TopBar/TopBar'
 import { _wx } from './Wx'
 
 const Sizes = {

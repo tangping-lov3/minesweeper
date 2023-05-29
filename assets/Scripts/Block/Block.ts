@@ -1,8 +1,8 @@
 import type { EventTouch } from 'cc'
 import { Button, Color, Component, Input, Label, Sprite, UITransform, Widget, _decorator } from 'cc'
-import { createEventHandler, emitter, flat, longpress } from './Utils'
-import { Circle } from './CIrcle'
-import { useThunder } from './Stores'
+import { createEventHandler, emitter, flat, longpress } from '../Utils'
+import { Circle } from '../CIrcle/CIrcle'
+import { useThunder } from '../Stores'
 
 const { ccclass, property } = _decorator
 
