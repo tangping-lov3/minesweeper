@@ -88,6 +88,7 @@ export class Init extends Component {
     _wx.showLoading({
       title: '正在初始化数据'
     })
+    this.TopBarNode.node.active = true
     await this.__initBlocks()
     this.__bindReactive()
     emitter.on('difficulty', (val: string) => {
